@@ -31,7 +31,7 @@ class binaryTree
       bool retrieve (const keyType &, dataType &) const;
 	  
 	  // TRAVERSE A TREE
-      void traverse() const;
+      void traverse(const keyType& word, std::vector<std::pair<keyType, int>>& top_words) const;
 
 	  // Iterative Pre-order Traversal
 	  void preorder (std::ofstream& file) const;
@@ -73,7 +73,7 @@ class binaryTree
       bool insert2 (NodePointer &, const keyType &, const dataType &);
 
 	  // Traverses a subtree
-      void traverse2 (NodePointer ) const; 
+      void traverse2 (NodePointer, const keyType&, std::vector<std::pair<keyType, int>>&) const; 
 
 	  // Graphic output of a subtree
 	  void graph2 (int ,NodePointer ) const;
@@ -81,6 +81,8 @@ class binaryTree
 	  // LOCATE A NODE CONTAINING ELEMENT AND ITS PARENT
       void parentSearch ( const keyType &k, bool &found, 
 							NodePointer &locptr, NodePointer &parent) const;
+
+      int hamming_distance(const keyType& word1, const keyType& word2) const;
 
 
 }; 

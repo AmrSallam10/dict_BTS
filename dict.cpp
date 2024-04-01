@@ -37,8 +37,8 @@ void dict<dataType>::add_word(const dataType& word)
     if (!dict_tree[index].search(tmp))
     {
         dict_tree[index].insert(tmp, true);
-        size++;
-    }
+        size++; 
+    } 
 }
 
 template <class dataType>
@@ -110,30 +110,24 @@ vector<vector<dataType>> dict<dataType>::spell_check(const string& filename)
         cout << "Error: File not found" << endl;
         return vector<vector<dataType>>();
     }
-    vector<vector<dataType>> misspelled;
+    vector<vector<dataType>> suggestions;
     dataType word;
     while (infile >> word)
     {
         to_lower_case(word);
         int index = get_index(word);
-        if (!dict_tree[index].search(word))
+        if (index == -1 || dict_tree[index].empty() || !dict_tree[index].search(word))
         {
-            vector<dataType> suggestions;
-            suggestions.push_back(word);
-            if (!dict_tree[index].empty())
-            {
-                vector<dataType> words = dict_tree[i].inorder();
-                for (int j = 0; j < words.size(); j++)
-                {
-                    if (hammer_distance(word, words[j]) == 1)
-                        suggestions.push_back(words[j]);
-                }
-            }
-            misspelled.push_back(suggestions);
+            vector<std::pair<dataType, int>> top_words;
+            suggestions.push_back(vector<dataType>());
+            suggestions.back().push_back(word);
+            get_similar_words(word, top_words);
+            for (int i = 0; i < top_words.size(); i++)
+                suggestions.back().push_back(top_words[i].first);
         }
     }
     infile.close();
-    return misspelled;
+    return suggestions;
 }
 
 template <class dataType>
@@ -171,15 +165,11 @@ void dict<dataType>::to_lower_case(dataType& word)
 }
 
 template <class dataType>
-int dict<dataType>::hammer_distance(const dataType& word1, const dataType& word2)
+void dict<dataType>::get_similar_words(const dataType& word, vector<std::pair<dataType, int>>& top_words)
 {
-    int m = std::min(word1.size(), word2.size());
-    int M = std::max(word1.size(), word2.size());
-    int mismatches = 0;
-    for (int i = 0; i < m; i++) {
-        if (word1[i] != word2[i]) {
-            mismatches++;
-        }
+    int index = get_index(word);
+    if (index != -1){
+        if (!dict_tree[index].empty())
+            dict_tree[index].traverse(word, top_words);
     }
-    return mismatches + (M - m);
 }

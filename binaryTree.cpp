@@ -5,6 +5,7 @@
 #include <iomanip>
 #include "Stackt.h"
 #include "Queuet.h"
+#include <algorithm>
 #include "binaryTree.h"
 using namespace std;
 
@@ -144,9 +145,9 @@ bool binaryTree<keyType, dataType>::empty() const
 // Post: Each element of the tree is displayed.
 // Elements are displayed in key order.
 template <class keyType, class dataType>
-void binaryTree<keyType, dataType>::traverse() const
+void binaryTree<keyType, dataType>::traverse(const keyType& word, std::vector<std::pair<keyType, int>>& top_words) const
 {
-   traverse2 (root);
+   traverse2 (root, word, top_words);
 } // end of public traverse
 
 //____________ Private traverse__________________
@@ -155,13 +156,22 @@ void binaryTree<keyType, dataType>::traverse() const
 // Pre : aRoot is defined.
 // Post: displays each node in key order.
 template <class keyType, class dataType>
-void binaryTree<keyType, dataType>::traverse2 (NodePointer aRoot) const       
+void binaryTree<keyType, dataType>::traverse2 (NodePointer aRoot, const keyType& word, std::vector<std::pair<keyType, int>>& top_words) const       
 {
    if (aRoot != NULL)
    { // recursive in-order traversal
-     traverse2 (aRoot->left);           
-     cout << aRoot->key << " " << aRoot->data << endl; 
-     traverse2 (aRoot->right); 
+     traverse2 (aRoot->left, word, top_words);       
+		int distance = hamming_distance(aRoot->key, word);
+		sort(top_words.begin(), top_words.end(), [](const pair<keyType, int>& a, const pair<keyType, int>& b) { return a.second < b.second; });
+		if (top_words.size() < 5)
+			top_words.push_back(make_pair(aRoot->key, distance));
+		else if (distance < top_words[4].second)
+		{
+			top_words.pop_back();
+			top_words.push_back(make_pair(aRoot->key, distance));
+		}
+    //  cout << aRoot->key << " " << aRoot->data << endl; 
+     traverse2 (aRoot->right, word, top_words); 
    }
    
 } // end of private traverse
@@ -176,7 +186,6 @@ void binaryTree<keyType, dataType>::preorder (std::ofstream& file) const
 	while(!s.stackIsEmpty())
 	{
 		s.pop(t); 
-		// cout << t->key << endl;
 		file << t->key <<" ";
 		if ( t->right != NULL ) s.push(t->right);
 		if ( t->left  != NULL ) s.push (t->left);
@@ -292,3 +301,18 @@ void binaryTree<keyType, dataType>::parentSearch (const keyType &k,
 		else found = true; // el found
 	}// end while
 } // end of private parentSearch
+
+
+template <class keyType, class dataType>
+int binaryTree<keyType, dataType>::hamming_distance(const keyType& word1, const keyType& word2) const
+{
+    int m = std::min(word1.size(), word2.size());
+    int M = std::max(word1.size(), word2.size());
+    int mismatches = 0;
+    for (int i = 0; i < m; i++) {
+        if (word1[i] != word2[i]) {
+            mismatches++;
+        }
+    }
+    return mismatches + (M - m);
+}

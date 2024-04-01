@@ -8,19 +8,17 @@ using namespace std;
 int main()
 {
     dict<string> dictionary;
-    vector<vector<string>> suggestions;
+    vector<vector<string>> misspelled_words;
     dictionary.generate_dict("text_files/wordlist.txt");
-    suggestions = dictionary.spell_check("text_files/file_to_check.txt");
-
-    for (int i = 0; i < suggestions.size(); i++){
-        cout << "Word: " << suggestions[i][0] << endl;
-        cout << "Suggestions: ";
-        for (int j = 1; j < suggestions[i].size(); j++)
-            cout << suggestions[i][j] << " ";
-        cout << endl << endl;
+    misspelled_words = dictionary.spell_check("text_files/file_to_check.txt");
+    for (int i = 0; i < misspelled_words.size(); i++)
+    {
+        cout << "Misspelled word: " << misspelled_words[i][0] << endl;
+        cout << "Similar words: ";
+        for (int j = 1; j < misspelled_words[i].size(); j++)
+            cout << misspelled_words[i][j] << " ";
+        cout << endl;
     }
-
-    // dictionary.graph_dict();
 
     return 0;
 }

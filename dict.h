@@ -37,7 +37,7 @@ class dict
 
         void to_lower_case(dataType& word);
 
-        int hammer_distance(const dataType& word1, const dataType& word2);
+        void get_similar_words(const dataType& word, vector<std::pair<dataType, int>>& similar_words);
 }; 
 #include "dict.cpp"
 #endif // DICT_H
