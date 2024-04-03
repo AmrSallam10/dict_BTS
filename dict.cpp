@@ -1,5 +1,3 @@
-#include <iostream>
-#include <iomanip>
 #include "dict.h"
 using namespace std;
 
@@ -33,12 +31,13 @@ void dict<dataType>::add_word(const dataType& word)
     to_lower_case(tmp);
     int index = get_index(tmp);
     if (index == -1)
-        return;
-    if (!dict_tree[index].search(tmp))
+        cout << "Invalid word: " << word << endl;
+    else if (!dict_tree[index].search(tmp))
     {
-        dict_tree[index].insert(tmp, true);
+        dict_tree[index].insert(tmp);
         size++; 
-    } 
+    } else
+        cout << "Word already exists: " << word << endl;
 }
 
 template <class dataType>
@@ -47,20 +46,16 @@ void dict<dataType>::remove_word(const dataType& word)
     dataType tmp = word;
     to_lower_case(tmp);
     int index = get_index(tmp);
-    if (index == -1){
-        cout << "Invalid word" << endl;
-        return;
-    }
-    if (dict_tree[index].search(tmp))
+    if (index == -1)
+        cout << "Invalid word: " << word << endl;
+    else if (dict_tree[index].search(tmp))
     {
         dict_tree[index].remove(tmp);
         size--;
     } else
-        cout << "Word not found" << endl;
-
+        cout << "Word not found: " << word << endl;
 }
 
-// TODO: Implement the save_dict function
 template <class dataType>
 void dict<dataType>::save_dict(const string& filename)
 {
@@ -73,7 +68,7 @@ void dict<dataType>::save_dict(const string& filename)
     }
     for (int i = 0; i < 36; i++)
         if (!dict_tree[i].empty())
-            dict_tree[i].preorder(outfile);
+            dict_tree[i].preorder_save(outfile);
     outfile.close();
 }
 
@@ -99,7 +94,6 @@ template <class dataType>
 int dict<dataType>::dict_size() const
 { return size; }
 
-// TODO: Implement the suggestion part
 template <class dataType>
 vector<vector<dataType>> dict<dataType>::spell_check(const string& filename)
 {
@@ -170,6 +164,6 @@ void dict<dataType>::get_similar_words(const dataType& word, vector<std::pair<da
     int index = get_index(word);
     if (index != -1){
         if (!dict_tree[index].empty())
-            dict_tree[index].traverse(word, top_words);
+            dict_tree[index].get_top_similar_words(word, top_words);
     }
 }
